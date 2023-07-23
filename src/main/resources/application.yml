@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: open-bi-platform
+  profiles:
+    active: dev
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  session:
+    timeout: 86400
+  servlet:
+    multipart:
+      max-file-size: 10MB
+  datasource:
+    url: jdbc:mysql://localhost:3306/bi
+    username: root
+    password: test123456!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+server:
+  address: 0.0.0.0
+  port: 8080
+  servlet:
+    context-path: /api
+    session:
+      cookie:
+        max-age: 2592000 # Expires in 30 days
+knife4j:
+  enable: true
+  setting:
+    language: en-US
+  production: false
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: valid
+      logic-delete-value: 0
+      logic-not-delete-value: 1
