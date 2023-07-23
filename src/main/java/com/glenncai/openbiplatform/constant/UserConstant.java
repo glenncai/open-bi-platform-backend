@@ -28,6 +28,8 @@ public final class UserConstant {
    */
   public static final String ADMIN_ROLE = "admin";
 
+  public static final String BAN_ROLE = "ban";
+
   private UserConstant() {
   }
 }

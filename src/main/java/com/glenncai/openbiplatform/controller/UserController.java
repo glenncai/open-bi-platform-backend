@@ -1,7 +1,10 @@
 package com.glenncai.openbiplatform.controller;
 
+import static com.glenncai.openbiplatform.constant.UserConstant.ADMIN_ROLE;
+import com.glenncai.openbiplatform.annotation.PreAuthorize;
 import com.glenncai.openbiplatform.common.BaseResponse;
 import com.glenncai.openbiplatform.common.BaseResult;
+import com.glenncai.openbiplatform.model.dto.user.UserAddRequest;
 import com.glenncai.openbiplatform.model.dto.user.UserLoginRequest;
 import com.glenncai.openbiplatform.model.dto.user.UserRegisterRequest;
 import com.glenncai.openbiplatform.model.entity.User;
@@ -87,5 +90,21 @@ public class UserController {
   public BaseResponse<LoginUserVO> getCurrentLoginUser(HttpServletRequest request) {
     User user = userService.getCurrentLoginUser(request);
     return BaseResult.success(userService.getCurrentLoginUserVO(user));
+  }
+
+  /**
+   * Add user (admin only)
+   *
+   * @param userAddRequest user add request body
+   * @param request        http request
+   * @return the id of the newly created user
+   */
+  @PreAuthorize(roleAllowed = ADMIN_ROLE)
+  @ApiOperation(value = "Add user (admin only)")
+  @PostMapping("/add")
+  public BaseResponse<Long> addUser(@RequestBody UserAddRequest userAddRequest,
+                                    HttpServletRequest request) {
+    long result = userService.addUser(userAddRequest, request);
+    return BaseResult.success(result);
   }
 }

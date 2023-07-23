@@ -1,10 +1,25 @@
 package com.glenncai.openbiplatform.model.dto.user;
 
+import lombok.Data;
+
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
- * This class is for xxx.
+ * This class is for user add request body
  *
  * @author Glenn Cai
- * @version 1.0 7/19/2023
+ * @version 1.0 07/19/2023
  */
-public class UserAddRequest {
+@Data
+public class UserAddRequest implements Serializable {
+
+  @Serial
+  private static final long serialVersionUID = 8464525927488463852L;
+
+  private String username;
+
+  private String password;
+
+  private String role;
 }

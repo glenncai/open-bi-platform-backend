@@ -1,6 +1,7 @@
 package com.glenncai.openbiplatform.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.glenncai.openbiplatform.model.dto.user.UserAddRequest;
 import com.glenncai.openbiplatform.model.dto.user.UserLoginRequest;
 import com.glenncai.openbiplatform.model.dto.user.UserRegisterRequest;
 import com.glenncai.openbiplatform.model.entity.User;
@@ -106,4 +107,13 @@ public interface UserService extends IService<User> {
    * @param username username
    */
   void checkUserExist(String username);
+
+  /**
+   * Add new user (only admin can do this)
+   *
+   * @param userAddRequest user add request body
+   * @param request        http request
+   * @return the id of the newly created user
+   */
+  long addUser(UserAddRequest userAddRequest, HttpServletRequest request);
 }

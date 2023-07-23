@@ -9,6 +9,7 @@ import com.glenncai.openbiplatform.exception.BusinessException;
 import com.glenncai.openbiplatform.exception.enums.AuthExceptionEnum;
 import com.glenncai.openbiplatform.mapper.IpLimitMapper;
 import com.glenncai.openbiplatform.mapper.UserMapper;
+import com.glenncai.openbiplatform.model.dto.user.UserAddRequest;
 import com.glenncai.openbiplatform.model.dto.user.UserLoginRequest;
 import com.glenncai.openbiplatform.model.dto.user.UserRegisterRequest;
 import com.glenncai.openbiplatform.model.entity.User;
@@ -320,6 +321,64 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     if (count > 0) {
       throw new BusinessException(AuthExceptionEnum.AUTH_USERNAME_EXIST_ERROR.getCode(),
                                   AuthExceptionEnum.AUTH_USERNAME_EXIST_ERROR.getMessage());
+    }
+  }
+
+  /**
+   * Add new user (only admin can do this)
+   *
+   * @param userAddRequest user add request body
+   * @param request        http request
+   * @return the id of the newly created user
+   */
+  @Override
+  public long addUser(UserAddRequest userAddRequest, HttpServletRequest request) {
+    String clientIp = getClientIpAddress(request);
+    String username = userAddRequest.getUsername();
+    String password = userAddRequest.getPassword();
+    String role = userAddRequest.getRole();
+
+    if (StringUtils.isAnyBlank(username, password, role)) {
+      throw new BusinessException(AuthExceptionEnum.AUTH_EMPTY_ERROR.getCode(),
+                                  AuthExceptionEnum.AUTH_EMPTY_ERROR.getMessage());
+    }
+    if (username.length() < 4 || username.length() > 16) {
+      throw new BusinessException(AuthExceptionEnum.AUTH_USERNAME_LENGTH_ERROR.getCode(),
+                                  AuthExceptionEnum.AUTH_USERNAME_LENGTH_ERROR.getMessage());
+    }
+    if (!username.matches(usernameValidateRegex)) {
+      throw new BusinessException(AuthExceptionEnum.AUTH_USERNAME_FORMAT_ERROR.getCode(),
+                                  AuthExceptionEnum.AUTH_USERNAME_FORMAT_ERROR.getMessage());
+    }
+    if (password.contains(" ")) {
+      throw new BusinessException(AuthExceptionEnum.AUTH_PASSWORD_SPACE_ERROR.getCode(),
+                                  AuthExceptionEnum.AUTH_PASSWORD_SPACE_ERROR.getMessage());
+    }
+    if (password.length() < 8) {
+      throw new BusinessException(AuthExceptionEnum.AUTH_PASSWORD_LENGTH_ERROR.getCode(),
+                                  AuthExceptionEnum.AUTH_PASSWORD_LENGTH_ERROR.getMessage());
+    }
+
+    synchronized (username.intern()) {
+      checkUserExist(username);
+
+      String encryptedPassword = encryptPassword(password);
+      User user = new User();
+      user.setUsername(username);
+      user.setPassword(encryptedPassword);
+      user.setRole(role);
+      boolean createResult = this.save(user);
+      if (!createResult) {
+        log.error("Client IP: {}, Username: {}, Error message: Create user by admin failed",
+                  clientIp,
+                  username);
+        throw new BusinessException(AuthExceptionEnum.AUTH_CREATE_USER_ERROR.getCode(),
+                                    AuthExceptionEnum.AUTH_CREATE_USER_ERROR.getMessage());
+      }
+
+      log.info("Client IP: {}, Username: {}, Success message: Create user by admin successfully",
+               clientIp, username);
+      return user.getId();
     }
   }
 }
