@@ -48,7 +48,7 @@ public class LogInterceptor {
     String reqParam = "[" + StringUtils.join(args, ", ") + "]";
 
     // Print request log
-    log.info("request start... request id: {}, url: {}, client ip: {}, request params: {}",
+    log.info("request start... id: {}, url: {}, client ip: {}, request params: {}",
              requestId, requestUrl, clientIp, reqParam);
 
     // Execute the method
@@ -59,7 +59,7 @@ public class LogInterceptor {
     long totalTimeMillis = stopWatch.getTotalTimeMillis();
 
     // Print response log
-    log.info("request end... request id: {}, cost: {}ms", requestId, totalTimeMillis);
+    log.info("request end... id: {}, cost: {}ms", requestId, totalTimeMillis);
 
     return result;
   }
