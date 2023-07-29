@@ -7,15 +7,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.glenncai.openbiplatform.exception.BusinessException;
 import com.glenncai.openbiplatform.exception.enums.AuthExceptionEnum;
-import com.glenncai.openbiplatform.mapper.IpLimitMapper;
 import com.glenncai.openbiplatform.mapper.UserMapper;
-import com.glenncai.openbiplatform.model.dto.user.UserAddRequest;
-import com.glenncai.openbiplatform.model.dto.user.UserLoginRequest;
-import com.glenncai.openbiplatform.model.dto.user.UserRegisterRequest;
+import com.glenncai.openbiplatform.model.dto.user.request.UserAddRequest;
+import com.glenncai.openbiplatform.model.dto.user.request.UserLoginRequest;
+import com.glenncai.openbiplatform.model.dto.user.request.UserRegisterRequest;
 import com.glenncai.openbiplatform.model.entity.User;
 import com.glenncai.openbiplatform.model.enums.UserRoleEnum;
 import com.glenncai.openbiplatform.model.vo.LoginUserVO;
 import com.glenncai.openbiplatform.model.vo.UserVO;
+import com.glenncai.openbiplatform.service.IpLimitService;
 import com.glenncai.openbiplatform.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -41,10 +41,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
   private static final String usernameValidateRegex = "^[a-zA-Z0-9]{4,16}$";
 
   @Resource
-  IpLimitMapper ipLimitMapper;
+  private UserMapper userMapper;
 
   @Resource
-  private UserMapper userMapper;
+  private IpLimitService ipLimitService;
 
   /**
    * User register
@@ -169,6 +169,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                                   AuthExceptionEnum.AUTH_UPDATE_LOGIN_IP_ERROR.getMessage());
     }
 
+    // Update ip limit
+    ipLimitService.initIpLimit(clientIp);
+
+    // Save user info to session after login successfully
     log.info("Client IP: {}, Username: {}, Success message: Login successfully", clientIp,
              username);
     request.getSession().setAttribute(LOGIN_USER_STAGE, user);

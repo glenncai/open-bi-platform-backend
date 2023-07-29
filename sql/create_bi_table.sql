@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `t_ip_limit`
 (
     `ip`               VARCHAR(64) NOT NULL PRIMARY KEY DEFAULT '' COMMENT 'IP',
     `call_count_today` INT         NOT NULL             DEFAULT 0 COMMENT 'Call API service count today',
-    `last_call_date`   DATETIME    NOT NULL             DEFAULT CURRENT_TIMESTAMP COMMENT 'Last call API service date'
+    `last_call_date`   DATETIME    NOT NULL             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last call API service date'
 ) COMMENT 'IP limit table';
 
 -- Chart table

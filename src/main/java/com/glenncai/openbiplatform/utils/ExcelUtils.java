@@ -2,17 +2,15 @@ package com.glenncai.openbiplatform.utils;
 
 import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.support.ExcelTypeEnum;
-import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * This class is for Excel utils
@@ -23,10 +21,13 @@ import java.util.Objects;
 @Slf4j
 public class ExcelUtils {
 
-  private static final String xlxMimeType = "application/vnd.ms-excel";
+  private static final String XLS_MIME_TYPE = "application/vnd.ms-excel";
 
-  private static final String xlsxMimeType =
+  private static final String XLSX_MIME_TYPE =
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+  private ExcelUtils() {
+  }
 
   /**
    * Convert Excel to CSV
@@ -35,44 +36,51 @@ public class ExcelUtils {
    * @return CSV string
    */
   public static String excelToCsv(MultipartFile multipartFile) {
-    String mimeType = multipartFile.getContentType();
-    ExcelTypeEnum excelType = null;
+    ExcelTypeEnum excelType = getExcelType(multipartFile.getContentType());
+    try (InputStream inputStream = multipartFile.getInputStream()) {
+      List<Map<Integer, String>> data = EasyExcelFactory.read(inputStream)
+                                                        .excelType(excelType)
+                                                        .sheet()
+                                                        .headRowNumber(0)
+                                                        .doReadSync();
+      if (CollectionUtils.isEmpty(data)) {
+        return "";
+      }
 
-    switch (Objects.requireNonNull(mimeType)) {
-      case xlxMimeType -> excelType = ExcelTypeEnum.XLS;
-      case xlsxMimeType -> excelType = ExcelTypeEnum.XLSX;
-    }
+      StringJoiner output = new StringJoiner("\n");
 
-    List<Map<Integer, String>> list = null;
-    try {
-      list = EasyExcelFactory.read(multipartFile.getInputStream())
-                             .excelType(excelType)
-                             .sheet()
-                             .headRowNumber(0)
-                             .doReadSync();
+      // Add header row
+      output.add(String.join(",", data.get(0).values()));
+
+      // Add data rows
+      for (int i = 1; i < data.size(); i++) {
+        output.add(String.join(",", data.get(i).values()));
+      }
+
+      return output.toString();
     } catch (IOException e) {
-      log.error("Read Excel file failed. Input file name: {}, mime type: {}",
-                multipartFile.getOriginalFilename(), mimeType);
+      log.error("Failed to read Excel file: {}, Error message: {}",
+                multipartFile.getOriginalFilename(), e.getMessage());
     }
 
-    if (CollectionUtils.isEmpty(list)) {
-      return "";
+    return "";
+  }
+
+  /**
+   * Determine Excel type used in EasyExcel
+   *
+   * @param mimeType mime type
+   * @return the enum excel type
+   */
+  private static ExcelTypeEnum getExcelType(String mimeType) {
+    if (XLS_MIME_TYPE.equals(mimeType)) {
+      return ExcelTypeEnum.XLS;
     }
 
-    StringBuilder stringBuilder = new StringBuilder();
-    // Read header
-    LinkedHashMap<Integer, String> headerMap = (LinkedHashMap<Integer, String>) list.get(0);
-    // Convert header to list
-    List<String> headerList = headerMap.values().stream().filter(ObjectUtils::isNotEmpty).toList();
-    // Append header to CSV string
-    stringBuilder.append(StringUtils.join(headerList, ",")).append("\n");
-    // Read data
-    for (int i = 1; i < list.size(); i++) {
-      LinkedHashMap<Integer, String> dataMap = (LinkedHashMap<Integer, String>) list.get(i);
-      List<String> dataList = dataMap.values().stream().filter(ObjectUtils::isNotEmpty).toList();
-      stringBuilder.append(StringUtils.join(dataList, ",")).append("\n");
+    if (XLSX_MIME_TYPE.equals(mimeType)) {
+      return ExcelTypeEnum.XLSX;
     }
 
-    return stringBuilder.toString();
+    return null;
   }
 }

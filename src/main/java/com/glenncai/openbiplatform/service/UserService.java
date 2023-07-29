@@ -1,9 +1,9 @@
 package com.glenncai.openbiplatform.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.glenncai.openbiplatform.model.dto.user.UserAddRequest;
-import com.glenncai.openbiplatform.model.dto.user.UserLoginRequest;
-import com.glenncai.openbiplatform.model.dto.user.UserRegisterRequest;
+import com.glenncai.openbiplatform.model.dto.user.request.UserAddRequest;
+import com.glenncai.openbiplatform.model.dto.user.request.UserLoginRequest;
+import com.glenncai.openbiplatform.model.dto.user.request.UserRegisterRequest;
 import com.glenncai.openbiplatform.model.entity.User;
 import com.glenncai.openbiplatform.model.vo.LoginUserVO;
 import com.glenncai.openbiplatform.model.vo.UserVO;
