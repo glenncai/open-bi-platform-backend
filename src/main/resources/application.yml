@@ -22,6 +22,7 @@ spring:
     host: localhost
     port: 6379
     timeout: 10000
+    password: test123456!
 server:
   address: 0.0.0.0
   port: 8080

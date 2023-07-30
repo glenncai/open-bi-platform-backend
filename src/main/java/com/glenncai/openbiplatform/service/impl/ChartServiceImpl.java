@@ -7,6 +7,7 @@ import com.glenncai.openbiplatform.exception.BusinessException;
 import com.glenncai.openbiplatform.exception.enums.AiExceptionEnum;
 import com.glenncai.openbiplatform.exception.enums.ChartExceptionEnum;
 import com.glenncai.openbiplatform.manager.AiManager;
+import com.glenncai.openbiplatform.manager.RedisLimiterManager;
 import com.glenncai.openbiplatform.mapper.ChartMapper;
 import com.glenncai.openbiplatform.model.dto.ai.request.ChatRequest;
 import com.glenncai.openbiplatform.model.dto.chart.request.ChartGenByAiRequest;
@@ -47,6 +48,9 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
   @Resource
   private AiManager aiManager;
 
+  @Resource
+  private RedisLimiterManager redisLimiterManager;
+
   /**
    * Generate chart by AI synchronously
    *
@@ -65,6 +69,10 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
     ChatRequest chatRequest = new ChatRequest();
 
     User currentLoginUser = userService.getCurrentLoginUser(request);
+
+    // Rate limit for current user in this method, use 'genChartByAi_' and user id as identifier
+    redisLimiterManager.doRateLimit("genChartByAi_" + currentLoginUser.getId());
+
     boolean hasCallQuota = ipLimitService.hasRemainingCallCount(currentLoginUser.getId());
     if (!hasCallQuota) {
       throw new BusinessException(ChartExceptionEnum.CHART_NO_QUOTA_ERROR.getCode(),
