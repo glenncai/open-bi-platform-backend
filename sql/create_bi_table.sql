@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `t_chart`
     `chart_type`           VARCHAR(128)    NULL COMMENT 'Chart type',
     `gen_chart_data`       TEXT            NULL COMMENT 'Generated chart data',
     `gen_chart_conclusion` TEXT            NULL COMMENT 'Generated chart conclusion',
-    `status`               VARCHAR(128)    NOT NULL DEFAULT 'waiting' COMMENT 'waiting / running / succeed / failed',
+    `status`               TINYINT         NULL COMMENT '0: Waiting, 1: Running, 2: Succeed, 3: Failed',
     `exec_message`         TEXT            NULL COMMENT 'Execution message',
     `user_id`              BIGINT UNSIGNED NOT NULL COMMENT 'User ID',
     `valid`                TINYINT         NOT NULL DEFAULT 1 COMMENT '0: invalid, 1: valid',

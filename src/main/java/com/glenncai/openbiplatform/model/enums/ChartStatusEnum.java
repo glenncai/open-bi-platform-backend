@@ -11,15 +11,15 @@ import java.util.List;
  */
 public enum ChartStatusEnum {
 
-  WAITING("Waiting", "waiting"),
-  RUNNING("Running", "running"),
-  SUCCESS("Success", "success"),
-  FAILED("Failed", "failed");
+  WAITING("Waiting", 0),
+  RUNNING("Running", 1),
+  SUCCEED("Succeed", 2),
+  FAILED("Failed", 3);
 
   private final String text;
-  private final String value;
+  private final int value;
 
-  ChartStatusEnum(String text, String value) {
+  ChartStatusEnum(String text, int value) {
     this.text = text;
     this.value = value;
   }
@@ -29,19 +29,19 @@ public enum ChartStatusEnum {
    *
    * @return all chart status values
    */
-  public static List<String> getValues() {
+  public static List<Integer> getValues() {
     return Arrays.stream(ChartStatusEnum.values()).map(ChartStatusEnum::getValue).toList();
   }
 
   /**
-   * Get enum by value
+   * Get enum text by value
    *
    * @param value status value
-   * @return chart status enum
+   * @return chart status enum text
    */
-  public static ChartStatusEnum getEnumByValue(String value) {
+  public static ChartStatusEnum getEnumTextByValue(int value) {
     return Arrays.stream(ChartStatusEnum.values())
-                 .filter(statusEnum -> statusEnum.getValue().equals(value))
+                 .filter(chartStatusEnum -> chartStatusEnum.getValue() == value)
                  .findFirst()
                  .orElse(null);
   }
@@ -50,7 +50,7 @@ public enum ChartStatusEnum {
     return text;
   }
 
-  public String getValue() {
+  public int getValue() {
     return value;
   }
 }

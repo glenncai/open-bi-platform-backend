@@ -12,7 +12,7 @@
     <result property="chartType" column="chart_type" jdbcType="VARCHAR"/>
     <result property="genChartData" column="gen_chart_data" jdbcType="VARCHAR"/>
     <result property="genChartConclusion" column="gen_chart_conclusion" jdbcType="VARCHAR"/>
-    <result property="status" column="status" jdbcType="VARCHAR"/>
+    <result property="status" column="status" jdbcType="TINYINT"/>
     <result property="execMessage" column="exec_message" jdbcType="VARCHAR"/>
     <result property="userId" column="user_id" jdbcType="BIGINT"/>
     <result property="valid" column="valid" jdbcType="TINYINT"/>
@@ -22,9 +22,9 @@
 
   <sql id="Base_Column_List">
     id,goal,`name`,
-        chart_data,chart_type,gen_chart_data,
-        gen_chart_conclusion,`status`,exec_message,
-        user_id,valid,created_at,
-        updated_at
+    chart_data,chart_type,gen_chart_data,
+    gen_chart_conclusion,`status`,exec_message,
+    user_id,valid,created_at,
+    updated_at
   </sql>
 </mapper>

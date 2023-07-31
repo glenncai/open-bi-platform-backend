@@ -139,7 +139,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
     chart.setChartType(chartType);
     chart.setGenChartData(chartCode);
     chart.setGenChartConclusion(chartConclusion);
-    chart.setStatus(ChartStatusEnum.SUCCESS.getValue());
+    chart.setStatus(ChartStatusEnum.SUCCEED.getValue());
     chart.setExecMessage(userInput.toString());
     chart.setUserId(currentLoginUser.getId());
     boolean saveChartResult = this.save(chart);

@@ -58,9 +58,9 @@ public class Chart implements Serializable {
   private String genChartConclusion;
 
   /**
-   * waiting / running / succeed / failed
+   * 0: Waiting, 1: Running, 2: Succeed, 3: Failed
    */
-  private String status;
+  private int status;
 
   /**
    * Execution message
