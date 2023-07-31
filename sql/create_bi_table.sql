@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `t_user`
     `id`         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Primary key',
     `username`   VARCHAR(256)    NOT NULL COMMENT 'Username',
     `password`   VARCHAR(512)    NOT NULL COMMENT 'Password',
-    `role`       VARCHAR(256)    NOT NULL DEFAULT 'user' COMMENT 'user / admin',
+    `role`       VARCHAR(256)    NOT NULL DEFAULT 'user' COMMENT 'user / admin / ban',
     `login_ip`   VARCHAR(256)    NOT NULL DEFAULT '' COMMENT 'Login IP',
     `valid`      TINYINT         NOT NULL DEFAULT 1 COMMENT '0: invalid, 1: valid',
     `created_at` DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Created time',
