@@ -18,14 +18,14 @@ public class FileUtils {
   }
 
   /**
-   * To check if file size is less than max size
+   * To check if file size is invalid
    *
    * @param file    file
    * @param maxSize max size
    * @param unit    unit (B, K, M, G)
-   * @return true if file size is less than max size
+   * @return true if the file size is larger than max size
    */
-  public static boolean validFileSize(File file, int maxSize, String unit) {
+  public static boolean isInvalidFileSize(File file, int maxSize, String unit) {
     long bytes = file.length();
     double multiplier = switch (unit.toUpperCase()) {
       case "B" -> 1; // Bytes
@@ -37,18 +37,18 @@ public class FileUtils {
 
     double fileSizeInUnits = bytes / multiplier;
 
-    return fileSizeInUnits <= maxSize;
+    return fileSizeInUnits > maxSize;
   }
 
   /**
-   * To check if multipart file size is less than max size
+   * To check if multipart file size is invalid
    *
    * @param multipartFile multipart file
    * @param maxSize       max size
    * @param unit          unit (B, K, M, G)
-   * @return true if multipart file size is less than max size
+   * @return true if the multipart file size is larger than max size
    */
-  public static boolean validFileSize(MultipartFile multipartFile, int maxSize, String unit) {
+  public static boolean isInvalidFileSize(MultipartFile multipartFile, int maxSize, String unit) {
     long bytes = multipartFile.getSize();
     double multiplier = switch (unit.toUpperCase()) {
       case "B" -> 1; // Bytes
@@ -60,22 +60,22 @@ public class FileUtils {
 
     double fileSizeInUnits = bytes / multiplier;
 
-    return fileSizeInUnits <= maxSize;
+    return fileSizeInUnits > maxSize;
   }
 
   /**
-   * To check if file extension is valid
+   * To check if file extension is invalid
    *
    * @param filename            file name
    * @param validFileExtensions valid file extensions
-   * @return true if file extension is valid
+   * @return true if file extension is invalid
    */
-  public static boolean validFileExtension(String filename, List<String> validFileExtensions) {
+  public static boolean isInvalidFileExtension(String filename, List<String> validFileExtensions) {
     String extension = Optional.ofNullable(filename)
                                .filter(f -> f.contains("."))
                                .map(f -> f.substring(filename.lastIndexOf(".") + 1))
                                .orElse("");
 
-    return validFileExtensions.contains(extension);
+    return !(validFileExtensions.contains(extension));
   }
 }

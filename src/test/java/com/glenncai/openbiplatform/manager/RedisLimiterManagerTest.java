@@ -24,7 +24,7 @@ class RedisLimiterManagerTest {
   void doRateLimit() {
     String userId = "1";
     int count = 0;
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 15; i++) {
       try {
         redisLimiterManager.doRateLimit(userId);
         count++;

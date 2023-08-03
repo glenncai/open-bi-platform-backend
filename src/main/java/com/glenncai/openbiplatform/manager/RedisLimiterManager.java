@@ -34,8 +34,8 @@ public class RedisLimiterManager {
    */
   public void doRateLimit(String key) {
     RRateLimiter rateLimiter = redissonClient.getRateLimiter(key);
-    // Each user in all servers (shared times) can only send one request every five minutes
-    rateLimiter.trySetRate(RateType.OVERALL, 1, 5, RateIntervalUnit.MINUTES);
+    // Each user in all servers (distributed system) can only send one request every five minutes
+    rateLimiter.trySetRate(RateType.OVERALL, 30, 1, RateIntervalUnit.SECONDS);
 
     // Acquire a permit, if it is not available, then wait for the specified time
     boolean canDo = rateLimiter.tryAcquire(1);

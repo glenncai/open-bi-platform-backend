@@ -49,4 +49,20 @@ public class ChartController {
                                                     httpServletRequest);
     return BaseResult.success(chartVO);
   }
+
+  /**
+   * Chart generate by AI asynchronously (Thread pool executor) api
+   *
+   * @param multipartFile       file
+   * @param chartGenByAiRequest chart gen by ai request body
+   * @param httpServletRequest  http request
+   */
+  @ApiOperation(value = "Generate chart by AI async")
+  @PostMapping("/gen/async")
+  public void genChartByAiAsync(@RequestPart("file") MultipartFile multipartFile,
+                                ChartGenByAiRequest chartGenByAiRequest,
+                                HttpServletRequest httpServletRequest) {
+    chartService.genChartByAiAsync(multipartFile, chartGenByAiRequest,
+                                   httpServletRequest);
+  }
 }
