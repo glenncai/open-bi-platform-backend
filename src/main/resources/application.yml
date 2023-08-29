@@ -23,6 +23,11 @@ spring:
     port: 6379
     timeout: 10000
     password: test123456!
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
 server:
   address: 0.0.0.0
   port: 8080
