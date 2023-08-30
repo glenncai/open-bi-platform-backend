@@ -65,4 +65,20 @@ public class ChartController {
     chartService.genChartByAiAsync(multipartFile, chartGenByAiRequest,
                                    httpServletRequest);
   }
+
+  /**
+   * Chart generate by AI asynchronously (RabbitMQ) api
+   *
+   * @param multipartFile       file
+   * @param chartGenByAiRequest chart gen by ai request body
+   * @param httpServletRequest  http request
+   */
+  @ApiOperation(value = "Generate chart by AI async with RabbitMQ")
+  @PostMapping("/gen/async/mq")
+  public void genChartByAiAsyncMq(@RequestPart("file") MultipartFile multipartFile,
+                                  ChartGenByAiRequest chartGenByAiRequest,
+                                  HttpServletRequest httpServletRequest) {
+    chartService.genChartByAiAsyncMq(multipartFile, chartGenByAiRequest,
+                                     httpServletRequest);
+  }
 }

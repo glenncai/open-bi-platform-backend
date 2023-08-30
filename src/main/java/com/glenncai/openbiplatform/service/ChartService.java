@@ -39,6 +39,16 @@ public interface ChartService extends IService<Chart> {
                          HttpServletRequest request);
 
   /**
+   * Generate chart by AI asynchronously (RabbitMQ)
+   *
+   * @param multipartFile       file
+   * @param chartGenByAiRequest chart gen by ai request body
+   * @param request             http request
+   */
+  void genChartByAiAsyncMq(MultipartFile multipartFile, ChartGenByAiRequest chartGenByAiRequest,
+                           HttpServletRequest request);
+
+  /**
    * Updates chart status
    *
    * @param chartUpdateStatusRequest chart update status request body

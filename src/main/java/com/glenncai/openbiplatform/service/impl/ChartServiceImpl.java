@@ -1,9 +1,12 @@
 package com.glenncai.openbiplatform.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.glenncai.openbiplatform.bimq.BiMessageProducer;
 import com.glenncai.openbiplatform.config.registry.AiThreadPoolExecutorRegistry;
 import com.glenncai.openbiplatform.constant.AiConstant;
+import com.glenncai.openbiplatform.constant.BiMqConstant;
 import com.glenncai.openbiplatform.constant.ChartConstant;
+import com.glenncai.openbiplatform.constant.UserConstant;
 import com.glenncai.openbiplatform.exception.BusinessException;
 import com.glenncai.openbiplatform.exception.enums.AiExceptionEnum;
 import com.glenncai.openbiplatform.exception.enums.ChartExceptionEnum;
@@ -58,6 +61,9 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
 
   @Resource
   private RedisLimiterManager redisLimiterManager;
+
+  @Resource
+  private BiMessageProducer biMessageProducer;
 
   /**
    * Generate chart by AI synchronously
@@ -294,6 +300,96 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
       throw new BusinessException(ChartExceptionEnum.CHART_AI_THREAD_POOL_FULL_ERROR.getCode(),
                                   ChartExceptionEnum.CHART_AI_THREAD_POOL_FULL_ERROR.getMessage());
     }
+
+    // Update call count quota for current user
+    ipLimitService.increaseCallCount(currentLoginUser.getId());
+  }
+
+  /**
+   * Generate chart by AI asynchronously (RabbitMQ)
+   *
+   * @param multipartFile       file
+   * @param chartGenByAiRequest chart gen by ai request body
+   * @param request             http request
+   */
+  @Override
+  public void genChartByAiAsyncMq(MultipartFile multipartFile,
+                                  ChartGenByAiRequest chartGenByAiRequest,
+                                  HttpServletRequest request) {
+    String originalFilename = multipartFile.getOriginalFilename();
+    String chartName = chartGenByAiRequest.getName();
+    String chartType = chartGenByAiRequest.getChartType();
+    String goal = chartGenByAiRequest.getGoal();
+    ChatRequest chatRequest = new ChatRequest();
+    ChartUpdateStatusRequest chartUpdateStatusRequest = new ChartUpdateStatusRequest();
+
+    User currentLoginUser = userService.getCurrentLoginUser(request);
+    String currentUserRole = currentLoginUser.getRole();
+
+    // Rate limit for current user in this method, use 'genChartByAi_' and user id as identifier
+    redisLimiterManager.doRateLimit("genChartByAi_" + currentLoginUser.getId());
+
+    boolean hasCallQuota = ipLimitService.hasRemainingCallCount(currentLoginUser.getId());
+    if (!hasCallQuota) {
+      throw new BusinessException(ChartExceptionEnum.CHART_NO_QUOTA_ERROR.getCode(),
+                                  ChartExceptionEnum.CHART_NO_QUOTA_ERROR.getMessage());
+    }
+
+    if (StringUtils.isBlank(goal)) {
+      throw new BusinessException(ChartExceptionEnum.CHART_EMPTY_GOAL_ERROR.getCode(),
+                                  ChartExceptionEnum.CHART_EMPTY_GOAL_ERROR.getMessage());
+    }
+    if (FileUtils.isInvalidFileSize(multipartFile, ChartConstant.FILE_MAX_SIZE, "M")) {
+      throw new BusinessException(ChartExceptionEnum.CHART_FILE_SIZE_ERROR.getCode(),
+                                  ChartExceptionEnum.CHART_FILE_SIZE_ERROR.getMessage());
+    }
+    if (FileUtils.isInvalidFileExtension(multipartFile.getOriginalFilename(),
+                                         ChartConstant.VALID_FILE_EXTENSIONS)) {
+      throw new BusinessException(ChartExceptionEnum.CHART_FILE_EXTENSION_ERROR.getCode(),
+                                  ChartExceptionEnum.CHART_FILE_EXTENSION_ERROR.getMessage());
+    }
+
+    StringJoiner userInput = new StringJoiner("\n");
+    userInput.add("Analysis needs:");
+    String userGoal = goal;
+    if (StringUtils.isNotBlank(chartType)) {
+      userGoal += " , please generate a " + chartType + " chart.";
+    }
+    userInput.add(userGoal);
+    userInput.add("Raw data:");
+
+    // Compressed data
+    String csvData = ExcelUtils.excelToCsv(multipartFile);
+    userInput.add(csvData);
+
+    chatRequest.setKey(AiConstant.AI_API_KEY_VALUE);
+    chatRequest.setMessage(userInput.toString());
+
+    // Insert waiting chart info into database
+    Chart chart = new Chart();
+    chartName = ChartUtils.genChartNameAuto(chartName, originalFilename);
+    chart.setGoal(userGoal);
+    chart.setName(chartName);
+    chart.setChartData(csvData);
+    chart.setChartType(StringUtils.isBlank(chartType) ? "auto" : chartType);
+    chart.setStatus(ChartStatusEnum.WAITING.getValue());
+    chart.setExecMessage(userInput.toString());
+    chart.setUserId(currentLoginUser.getId());
+    boolean saveChartWaitingResult = this.save(chart);
+    if (!saveChartWaitingResult) {
+      throw new BusinessException(ChartExceptionEnum.CHART_SAVE_ERROR.getCode(),
+                                  ChartExceptionEnum.CHART_SAVE_ERROR.getMessage());
+    }
+
+    // Send message to RabbitMQ
+    String routingKey = "";
+    if (UserConstant.ADMIN_ROLE.equals(currentUserRole)) {
+      routingKey = BiMqConstant.BI_MQ_ADMIN_ROUTING_KEY;
+    } else if (UserConstant.DEFAULT_ROLE.equals(currentUserRole)) {
+      routingKey = BiMqConstant.BI_MQ_USER_ROUTING_KEY;
+    }
+    long newChartId = chart.getId();
+    biMessageProducer.sendMessage(String.valueOf(newChartId), routingKey);
 
     // Update call count quota for current user
     ipLimitService.increaseCallCount(currentLoginUser.getId());

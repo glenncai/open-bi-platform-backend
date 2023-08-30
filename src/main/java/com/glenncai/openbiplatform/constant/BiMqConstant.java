@@ -8,40 +8,29 @@ package com.glenncai.openbiplatform.constant;
  */
 public final class BiMqConstant {
 
-  /**
-   * BI RabbitMQ exchange name
-   */
+  // Global
+  public static final String BI_MQ_HOST = "localhost";
+  public static final String BI_MQ_LOGIN_USERNAME = "guest";
+  public static final String BI_MQ_LOGIN_PASSWORD = "guest";
+  public static final String BI_MQ_DIRECT_TYPE = "direct";
   public static final String BI_MQ_EXCHANGE_NAME = "bi_exchange";
+  public static final String BI_MQ_DLX_EXCHANGE_NAME = "bi_dlx_exchange";
 
-  /**
-   * BI RabbitMQ queue name
-   */
-  public static final String BI_MQ_QUEUE_NAME = "bi_queue";
+  // For user
+  public static final String BI_MQ_USER_QUEUE_NAME = "bi_user_queue";
+  public static final String BI_MQ_USER_ROUTING_KEY = "bi_user_routing_key";
 
-  /**
-   * BI RabbitMQ routing key
-   */
-  public static final String BI_MQ_ROUTING_KEY = "bi_routing_key";
+  // For admin
+  public static final String BI_MQ_ADMIN_QUEUE_NAME = "bi_admin_queue";
+  public static final String BI_MQ_ADMIN_ROUTING_KEY = "bi_admin_routing_key";
 
-  /**
-   * BI RabbitMQ direct exchange
-   */
-  public static final String BI_MQ_DIRECT_EXCHANGE = "direct";
+  // For user dead letter queue
+  public static final String BI_DLX_USER_QUEUE_NAME = "bi_dlx_user_queue";
+  public static final String BI_DLX_USER_ROUTING_KEY = "bi_dlx_user_routing_key";
 
-  /**
-   * BI RabbitMQ dead letter queue exchange name
-   */
-  public static final String BI_DLX_EXCHANGE_NAME = "bi_dlx_exchange";
-
-  /**
-   * BI RabbitMQ dead letter queue name
-   */
-  public static final String BI_DLX_QUEUE_NAME = "bi_dlx_queue";
-
-  /**
-   * BI RabbitMQ dead letter queue routing key
-   */
-  public static final String BI_DLX_ROUTING_KEY = "bi_dlx_routing_key";
+  // For admin dead letter queue
+  public static final String BI_DLX_ADMIN_QUEUE_NAME = "bi_dlx_admin_queue";
+  public static final String BI_DLX_ADMIN_ROUTING_KEY = "bi_dlx_admin_routing_key";
 
   private BiMqConstant() {
   }
