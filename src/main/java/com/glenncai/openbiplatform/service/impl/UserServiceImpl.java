@@ -97,7 +97,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
       user.setPassword(encryptedPassword);
       boolean createResult = this.save(user);
       if (!createResult) {
-        log.error("Client IP: {}, Username: {}, Error message: Create user failed", clientIp,
+        log.error("Client IP: {}, Username: {}, Error message: Failed to create new user", clientIp,
                   username);
         throw new BusinessException(AuthExceptionEnum.AUTH_CREATE_USER_ERROR.getCode(),
                                     AuthExceptionEnum.AUTH_CREATE_USER_ERROR.getMessage());
@@ -146,14 +146,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     // Encrypt password with MD5
     String encryptedPassword = encryptPassword(password);
 
-    // Check if username and password are correct
-    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-    queryWrapper.eq("username", username);
-    queryWrapper.eq("password", encryptedPassword);
-    User user = userMapper.selectOne(queryWrapper);
+    User user = userMapper.login(username, encryptedPassword);
 
     if (user == null) {
-      log.error("Client IP: {}, Username: {}, Error message: Username or password is incorrect",
+      log.error("Client IP: {}, Username: {}, Error message: Login failed",
                 clientIp, username);
       throw new BusinessException(AuthExceptionEnum.AUTH_LOGIN_ERROR.getCode(),
                                   AuthExceptionEnum.AUTH_LOGIN_ERROR.getMessage());

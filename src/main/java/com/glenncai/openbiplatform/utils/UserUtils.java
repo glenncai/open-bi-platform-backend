@@ -1,10 +1,11 @@
 package com.glenncai.openbiplatform.utils;
 
-import static com.glenncai.openbiplatform.constant.UserConstant.SALT;
-import org.springframework.util.DigestUtils;
+import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.crypto.digest.MD5;
+import com.glenncai.openbiplatform.constant.UserConstant;
 
 /**
- * This class is for user common utils
+ * User common utils
  *
  * @author Glenn Cai
  * @version 1.0 7/20/2023
@@ -15,6 +16,10 @@ public class UserUtils {
   }
 
   public static String encryptPassword(String password) {
-    return DigestUtils.md5DigestAsHex((password + SALT).getBytes());
+    MD5 md5 = MD5.create();
+    String hashSalt = md5.digestHex(UserConstant.SALT);
+    String hashSaltStart = CharSequenceUtil.subWithLength(hashSalt, 0, 6);
+    String hashSaltEnd = CharSequenceUtil.subSuf(hashSalt, hashSalt.length() - 3);
+    return md5.digestHex(hashSaltStart + password + hashSaltEnd).toUpperCase();
   }
 }

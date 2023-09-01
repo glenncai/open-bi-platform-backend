@@ -3,7 +3,6 @@ package com.glenncai.openbiplatform;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * @version 1.0 07/18/2023
  */
 @SpringBootApplication
-@ServletComponentScan
 @MapperScan("com.glenncai.openbiplatform.mapper")
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 public class OpenBiPlatformApplication {

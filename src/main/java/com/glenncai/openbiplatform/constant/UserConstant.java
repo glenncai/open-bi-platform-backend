@@ -16,7 +16,7 @@ public final class UserConstant {
   /**
    * Session map key for login user
    */
-  public static final String LOGIN_USER_STAGE = "loginUserStage";
+  public static final String LOGIN_USER_STAGE = "openbi:user:stage";
 
   /**
    * Default role

@@ -7,7 +7,7 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   session:
-    timeout: 86400
+    timeout: 259200 # 3 days
     store-type: redis # Distributed session storage
   servlet:
     multipart:
@@ -23,8 +23,12 @@ spring:
     database: 0
     host: localhost
     port: 6379
-    timeout: 10000
+    timeout: 10s
     password: test123456!
+  cache:
+    redis:
+      time-to-live: 2592000000 # 30 days
+    type: redis
   rabbitmq:
     host: localhost
     port: 5672

@@ -34,6 +34,16 @@ public class LoginUserVO implements Serializable {
   private String role;
 
   /**
+   * Login IP
+   */
+  private String loginIp;
+
+  /**
+   * Is valid
+   */
+  private Integer valid;
+
+  /**
    * Created time
    */
   private Date createdAt;

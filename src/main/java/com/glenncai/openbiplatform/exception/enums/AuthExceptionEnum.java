@@ -10,9 +10,10 @@ import com.glenncai.openbiplatform.common.ErrorCode;
  */
 public enum AuthExceptionEnum {
 
-  AUTH_EMPTY_HTTP_REQUEST_ERROR(ErrorCode.PARAM_ERROR.getCode(),
-                                ErrorCode.PARAM_ERROR.getMessage()),
-  AUTH_EMPTY_ERROR(ErrorCode.PARAM_ERROR.getCode(), "Username or password cannot be empty."),
+  AUTH_EMPTY_HTTP_REQUEST_ERROR(ErrorCode.NOT_FOUND_PARAM_ERROR.getCode(),
+                                ErrorCode.NOT_FOUND_PARAM_ERROR.getMessage()),
+  AUTH_EMPTY_ERROR(ErrorCode.NOT_FOUND_PARAM_ERROR.getCode(),
+                   "Username or password cannot be empty."),
   AUTH_USERNAME_LENGTH_ERROR(ErrorCode.PARAM_ERROR.getCode(),
                              "Username length must be between 4 and 16."),
   AUTH_USERNAME_FORMAT_ERROR(ErrorCode.PARAM_ERROR.getCode(),
@@ -23,7 +24,7 @@ public enum AuthExceptionEnum {
   AUTH_PASSWORD_NOT_MATCH_ERROR(ErrorCode.PARAM_ERROR.getCode(),
                                 "Password and confirm password do not match."),
   AUTH_USERNAME_EXIST_ERROR(ErrorCode.PARAM_ERROR.getCode(), "Username already exists."),
-  AUTH_CREATE_USER_ERROR(ErrorCode.PARAM_ERROR.getCode(), "Create user failed."),
+  AUTH_CREATE_USER_ERROR(ErrorCode.OPERATION_ERROR.getCode(), "Failed to create user."),
   AUTH_LOGIN_ERROR(ErrorCode.PARAM_ERROR.getCode(), "Username or password is incorrect."),
   AUTH_UPDATE_LOGIN_IP_ERROR(ErrorCode.SERVER_ERROR.getCode(),
                              "Please make sure your network is stable."),
